@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>زمان برگزاری موکب - موکب پیامبر اعظم</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vazir-font@30.1.0/dist/font-face.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Vazir, 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a5f23 0%, #0d3011 100%);
+            color: #333;
+            min-height: 100vh;
+            padding: 20px;
+            background-attachment: fixed;
+        }
+        
+        .container {
+            max-width: 1100px;
+            margin: 30px auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 25px;
+            padding: 30px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25);
+            border: 3px solid #d4af37;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100%;
+            height: 6px;
+            background: linear-gradient(90deg, #d4af37, #ffd700, #d4af37);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid rgba(212, 175, 55, 0.3);
+        }
+        
+        .title {
+            font-size: 2.2rem;
+            color: #1a5f23;
+            margin-bottom: 10px;
+            font-weight: 800;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            color: #444;
+            margin-bottom: 15px;
+        }
+        
+        /* بخش وضعیت و تایمر در یک خط */
+        .main-row {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+        
+        @media (max-width: 900px) {
+            .main-row {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+        }
+        
+        .status-container {
+            background: linear-gradient(135deg, #f0f9f0 0%, #e1f5e1 100%);
+            border-radius: 20px;
+            padding: 20px;
+            text-align: center;
+            border: 2px solid rgba(76, 175, 80, 0.3);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .status-title {
+            font-size: 1.5rem;
+            color: #2e7d32;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .checkmark {
+            color: #4caf50;
+            font-size: 1.8rem;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        /* تایمر کامپکت */
+        .timer-container {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            border-radius: 20px;
+            padding: 20px;
+            border: 2px solid rgba(33, 150, 243, 0.3);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .timer-title {
+            font-size: 1.5rem;
+            color: #1565c0;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .countdown {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .time-unit {
+            background: white;
+            border-radius: 12px;
+            padding: 15px 10px;
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+            border: 2px solid #d4af37;
+            transition: all 0.3s ease;
+        }
+        
+        .time-unit:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.12);
+        }
+        
+        .time-value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #1a5f23;
+            display: block;
+            margin-bottom: 5px;
+        }
+        
+        .time-label {
+            font-size: 1rem;
+            color: #666;
+            display: block;
+        }
+        
+        .countdown-text {
+            font-size: 1.1rem;
+            color: #555;
+            text-align: center;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 8px;
+            border-right: 3px solid #d4af37;
+        }
+        
+        /* بخش اطلاعیه‌ها */
+        .announcements-container {
+            background: linear-gradient(135deg, #fff8e1 0%, #ffecb3 100%);
+            border-radius: 20px;
+            padding: 25px;
+            border: 2px solid rgba(255, 193, 7, 0.3);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 25px;
+        }
+        
+        .announcements-title {
+            font-size: 1.6rem;
+            color: #ff8f00;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid rgba(255, 193, 7, 0.3);
+        }
+        
+        .announcements-title i {
+            color: #ff8f00;
+        }
+        
+        .announcements-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+        
+        @media (max-width: 700px) {
+            .announcements-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .announcement-item {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            border-right: 4px solid #d4af37;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+        }
+        
+        .announcement-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .announcement-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .announcement-header i {
+            color: #1a5f23;
+            font-size: 1.2rem;
+        }
+        
+        .announcement-text {
+            font-size: 1.1rem;
+            color: #444;
+            line-height: 1.5;
+            margin-bottom: 8px;
+        }
+        
+        .announcement-date {
+            font-size: 0.85rem;
+            color: #888;
+            font-style: italic;
+        }
+        
+        /* پیام در حال برگزاری */
+        .message-container {
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 25px;
+            text-align: center;
+            border: 2px solid rgba(76, 175, 80, 0.3);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            display: none;
+        }
+        
+        .message-title {
+            font-size: 1.6rem;
+            color: #2e7d32;
+            margin-bottom: 10px;
+        }
+        
+        .message-text {
+            font-size: 1.2rem;
+            color: #1b5e20;
+            line-height: 1.5;
+        }
+        
+        /* دکمه بازگشت */
+        .back-button-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .back-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #1a5f23, #2e8b57);
+            color: white;
+            padding: 12px 35px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-size: 1.2rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: 2px solid #d4af37;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            min-width: 220px;
+        }
+        
+        .back-button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            background: linear-gradient(135deg, #2e8b57, #1a5f23);
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #666;
+            font-size: 0.9rem;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+        }
+        
+        /* رسپانسیو */
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+                margin: 15px auto;
+            }
+            
+            .title {
+                font-size: 1.8rem;
+            }
+            
+            .countdown {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+            
+            .time-value {
+                font-size: 1.8rem;
+            }
+            
+            .back-button {
+                min-width: 200px;
+                padding: 10px 25px;
+                font-size: 1.1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 class="title">هر سه شنبه بلوار پیامبر اعظم</h1>
+            <p class="subtitle">زمان‌بندی و اطلاعیه‌های موکب پیامبر اعظم (دهه هشتادی‌ها)</p>
+        </div>
+        
+        <!-- ردیف اصلی: وضعیت + تایمر -->
+        <div class="main-row">
+            <div class="status-container">
+                <h2 class="status-title">
+                    وضعیت این هفته
+                    <i class="fas fa-check-circle checkmark"></i>
+                </h2>
+                <p id="status-text" style="color: #444; font-size: 1.1rem; margin-top: 5px;">برگزار می‌شود</p>
+            </div>
+            
+            <div class="timer-container">
+                <h2 class="timer-title">زمان باقی‌مانده تا برگزاری موکب</h2>
+                <div class="countdown">
+                    <div class="time-unit">
+                        <span id="days" class="time-value">0</span>
+                        <span class="time-label">روز</span>
+                    </div>
+                    <div class="time-unit">
+                        <span id="hours" class="time-value">0</span>
+                        <span class="time-label">ساعت</span>
+                    </div>
+                    <div class="time-unit">
+                        <span id="minutes" class="time-value">0</span>
+                        <span class="time-label">دقیقه</span>
+                    </div>
+                    <div class="time-unit">
+                        <span id="seconds" class="time-value">0</span>
+                        <span class="time-label">ثانیه</span>
+                    </div>
+                </div>
+                <div id="countdown-text" class="countdown-text">در حال محاسبه زمان...</div>
+            </div>
+        </div>
+        
+        <!-- پیام در حال برگزاری -->
+        <div id="active-message" class="message-container">
+            <h3 class="message-title">موکب در حال برگزاری</h3>
+            <p class="message-text">موکب پیامبر اعظم از ساعت <strong>۱۴:۰۰</strong> تا <strong>۱۹:۰۰</strong> برقرار است</p>
+            <p class="message-text" style="margin-top: 10px; color: #1a5f23; font-weight: 600;">هم اکنون می‌توانید به موکب مراجعه کنید</p>
+        </div>
+        
+        <!-- بخش اطلاعیه‌ها -->
+        <div class="announcements-container">
+            <h2 class="announcements-title">
+                <i class="fas fa-bullhorn"></i>
+                اطلاعیه‌های مهم
+            </h2>
+            <div class="announcements-grid">
+                <div class="announcement-item">
+                    <div class="announcement-header">
+                        <i class="fas fa-info-circle"></i>
+                        <strong>برنامه این هفته</strong>
+                    </div>
+                    <p class="announcement-text">موکب با برنامه کامل و غذای گرم برگزار می‌شود</p>
+                    <div class="announcement-date">۱۰ بهمن ۱۴۰۴</div>
+                </div>
+                
+                <div class="announcement-item">
+                    <div class="announcement-header">
+                        <i class="fas fa-utensils"></i>
+                        <strong>منوی غذایی</strong>
+                    </div>
+                    <p class="announcement-text">چلو خورش قورمه سبزی، سالاد و نوشیدنی گرم</p>
+                    <div class="announcement-date">۹ بهمن ۱۴۰۴</div>
+                </div>
+                
+                <div class="announcement-item">
+                    <div class="announcement-header">
+                        <i class="fas fa-car"></i>
+                        <strong>پارکینگ</strong>
+                    </div>
+                    <p class="announcement-text">پارکینگ رایگان در مجاورت بلوار پیامبر اعظم</p>
+                    <div class="announcement-date">۸ بهمن ۱۴۰۴</div>
+                </div>
+                
+                <div class="announcement-item">
+                    <div class="announcement-header">
+                        <i class="fas fa-hand-holding-heart"></i>
+                        <strong>کمک‌های مردمی</strong>
+                    </div>
+                    <p class="announcement-text">پذیرای کمک‌های نقدی و غیرنقدی برای تداوم فعالیت‌ها</p>
+                    <div class="announcement-date">۷ بهمن ۱۴۰۴</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- دکمه بازگشت به صفحه اصلی -->
+        <div class="back-button-container">
+            <a href="index.html" class="back-button">
+                <i class="fas fa-home"></i> بازگشت به صفحه اصلی
+            </a>
+        </div>
+        
+        <div class="footer">
+            <p>© ۱۴۰۴ - موکب پیامبر اعظم (دهه هشتادی‌ها)</p>
+            <p>آدرس: بلوار پیامبر اعظم، میدان امام حسین (ع) - تلفن: ۰۹۱۲۱۲۳۴۵۶۷</p>
+        </div>
+    </div>
+
+    <script>
+        // تابع برای محاسبه سه‌شنبه بعدی
+        function getNextWednesday() {
+            const now = new Date();
+            const currentDay = now.getDay(); // 0 = یکشنبه, 1 = دوشنبه, ..., 3 = سه‌شنبه
+            const currentHour = now.getHours();
+            const currentMinutes = now.getMinutes();
+            
+            // اگر سه‌شنبه است و قبل از ساعت 2 است
+            if (currentDay === 3) {
+                if (currentHour < 14) {
+                    // سه‌شنبه امروز است اما قبل از ساعت 14
+                    return new Date(now.getFullYear(), now.getMonth(), now.getDate(), 14, 0, 0);
+                } else if (currentHour < 19) {
+                    // در حال برگزاری است (ساعت 14 تا 19)
+                    return null; // نشان‌دهنده در حال برگزاری
+                } else {
+                    // بعد از ساعت 19، سه‌شنبه هفته بعد
+                    const nextWednesday = new Date(now);
+                    nextWednesday.setDate(now.getDate() + 7);
+                    nextWednesday.setHours(14, 0, 0, 0);
+                    return nextWednesday;
+                }
+            }
+            
+            // اگر سه‌شنبه نیست
+            const daysUntilWednesday = (3 - currentDay + 7) % 7;
+            const nextWednesday = new Date(now);
+            nextWednesday.setDate(now.getDate() + (daysUntilWednesday === 0 ? 7 : daysUntilWednesday));
+            nextWednesday.setHours(14, 0, 0, 0);
+            return nextWednesday;
+        }
+        
+        // تابع به‌روزرسانی تایمر
+        function updateCountdown() {
+            const now = new Date();
+            const nextWednesday = getNextWednesday();
+            
+            // اگر null باشد یعنی در حال برگزاری است
+            if (nextWednesday === null) {
+                document.getElementById('active-message').style.display = 'block';
+                document.getElementById('status-text').textContent = 'در حال برگزاری';
+                document.getElementById('status-text').style.color = '#2e7d32';
+                document.getElementById('status-text').style.fontWeight = '600';
+                
+                // مخفی کردن تایمر
+                document.querySelector('.timer-container').style.display = 'none';
+                document.querySelector('.main-row').style.gridTemplateColumns = '1fr';
+                return;
+            }
+            
+            // نمایش تایمر
+            document.getElementById('active-message').style.display = 'none';
+            document.querySelector('.timer-container').style.display = 'block';
+            
+            // محاسبه زمان باقی‌مانده
+            const timeDiff = nextWednesday.getTime() - now.getTime();
+            
+            if (timeDiff <= 0) {
+                // اگر زمان گذشته باشد، سه‌شنبه بعدی را محاسبه کن
+                const newNextWednesday = new Date(nextWednesday);
+                newNextWednesday.setDate(nextWednesday.getDate() + 7);
+                const newTimeDiff = newNextWednesday.getTime() - now.getTime();
+                updateDisplay(newTimeDiff);
+            } else {
+                updateDisplay(timeDiff);
+            }
+        }
+        
+        // تابع نمایش زمان
+        function updateDisplay(timeDiff) {
+            const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
+            
+            // به‌روزرسانی نمایش
+            document.getElementById('days').textContent = days.toString().padStart(2, '0');
+            document.getElementById('hours').textContent = hours.toString().padStart(2, '0');
+            document.getElementById('minutes').textContent = minutes.toString().padStart(2, '0');
+            document.getElementById('seconds').textContent = seconds.toString().padStart(2, '0');
+            
+            // به‌روزرسانی وضعیت
+            const statusText = document.getElementById('status-text');
+            if (days > 1) {
+                statusText.textContent = 'برگزار می‌شود';
+                statusText.style.color = '#444';
+            } else if (days === 1) {
+                statusText.textContent = 'فردا برگزار می‌شود';
+                statusText.style.color = '#ff9800';
+                statusText.style.fontWeight = '600';
+            } else if (days === 0 && hours > 1) {
+                statusText.textContent = 'امروز برگزار می‌شود';
+                statusText.style.color = '#ff5722';
+                statusText.style.fontWeight = '600';
+            } else if (days === 0 && hours <= 1) {
+                statusText.textContent = 'به زودی برگزار می‌شود';
+                statusText.style.color = '#f44336';
+                statusText.style.fontWeight = '600';
+            }
+            
+            // متن توضیحی
+            const countdownText = document.getElementById('countdown-text');
+            if (days > 0) {
+                countdownText.textContent = 
+                    `${days} روز و ${hours} ساعت و ${minutes} دقیقه مانده`;
+            } else if (hours > 0) {
+                countdownText.textContent = 
+                    `${hours} ساعت و ${minutes} دقیقه مانده`;
+            } else if (minutes > 0) {
+                countdownText.textContent = 
+                    `${minutes} دقیقه و ${seconds} ثانیه مانده`;
+            } else {
+                countdownText.textContent = 
+                    `${seconds} ثانیه مانده`;
+            }
+            
+            // تغییر رنگ زمانی که کمتر از 1 روز مانده
+            if (days === 0 && hours < 24) {
+                countdownText.style.color = '#d32f2f';
+                countdownText.style.fontWeight = '600';
+            } else {
+                countdownText.style.color = '#555';
+                countdownText.style.fontWeight = 'normal';
+            }
+        }
+        
+        // تابع برای بررسی اگر الان ساعت برگزاری است (14 تا 19 سه‌شنبه)
+        function isMokebActive() {
+            const now = new Date();
+            const currentDay = now.getDay(); // 3 = سه‌شنبه
+            const currentHour = now.getHours();
+            
+            return currentDay === 3 && currentHour >= 14 && currentHour < 19;
+        }
+        
+        // به‌روزرسانی اولیه و تنظیم تایمر
+        updateCountdown();
+        setInterval(updateCountdown, 1000);
+        
+        // تنظیم وضعیت برگزار بر اساس زمان
+        function updateStatus() {
+            const statusElement = document.querySelector('.status-title');
+            if (isMokebActive()) {
+                statusElement.innerHTML = `وضعیت این هفته <i class="fas fa-play-circle checkmark"></i>`;
+                document.getElementById('status-text').textContent = 'در حال برگزاری';
+                document.getElementById('status-text').style.color = '#2e7d32';
+                document.getElementById('status-text').style.fontWeight = '600';
+            }
+        }
+        
+        updateStatus();
+        
+        // اضافه کردن افکت به تایمر
+        document.querySelectorAll('.time-unit').forEach(unit => {
+            unit.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-3px)';
+                this.style.boxShadow = '0 6px 15px rgba(0, 0, 0, 0.12)';
+            });
+            
+            unit.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0)';
+                this.style.boxShadow = '0 4px 10px rgba(0, 0, 0, 0.08)';
+            });
+        });
+        
+        // اضافه کردن افکت به اطلاعیه‌ها
+        document.querySelectorAll('.announcement-item').forEach(item => {
+            item.addEventListener('click', function() {
+                this.style.transform = 'scale(0.98)';
+                setTimeout(() => {
+                    this.style.transform = '';
+                }, 150);
+            });
+        });
+        
+        // اضافه کردن افکت به دکمه بازگشت
+        document.querySelector('.back-button').addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-3px)';
+        });
+        
+        document.querySelector('.back-button').addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+        });
+    </script>
+</body>
+</html>
